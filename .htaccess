@@ -1,0 +1,7 @@
+AddHandler php5-script .php
+RewriteEngine On
+RewriteRule view/([0-9]+)(/)?$ /?cmd=view&id=$1
+RewriteRule submit(/)?$ /?cmd=submit
+Options -Indexes
+php_value register_globals 1
+php_value register_globals on
