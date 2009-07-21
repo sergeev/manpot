@@ -33,13 +33,13 @@ if(isset($_POST["submitReport"])){
   		if(move_uploaded_file($_FILES['attachment']['tmp_name'], $target.$file_name)){
   			//echo ""
   		}else{
-  			echo "<center>Your ticket was submitted but the file was not attached. Ask the System Administrator to check file permissions on the upload directory.</center>";
+  			echo "<center>Ваше сообщение было опубликовано, но вложение не было загружено. Свяжитесь с Системным Администратором для проверки доступа к загрузке файлов.</center>";
   			$file_name = "";
   			$target = "";
   			
   		}
   	}else{
-  		echo "Ticket was submitted but your attachment was denied. Not in allowed file types.";
+  		echo "Ваше сообщение было опубликовано, но вложение не было загружено. Запрещенный тип файла.";
   		$file_name = "";
   			$target = "";
   	}
@@ -68,7 +68,7 @@ $bugView->responses($bugid);
 
 $bugView->reply($bugid);
 }else{
-	echo "Invalid bug ID";
+	echo "Неверный номер сообщения.";
 }
 ?>
 <div class="clear"></div>

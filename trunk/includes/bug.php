@@ -305,7 +305,7 @@ class View extends Bugs {
 </table>
     	<?php
     	}else{
-    		echo "Forbidden";
+    		echo "Доступ запрещен";
     	}
     }
     

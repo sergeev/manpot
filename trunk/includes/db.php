@@ -32,10 +32,10 @@ class Database {
     function NewConnection(){ 
         $this->connection = @mysql_connect($this->host, $this->user, $this->pass );
       if(!$this->connection)
-        $this->error("Couldn't connect to the server : ".$this->host."");
+        $this->error("Ќевозможно присоединитс€ к серверу : ".$this->host."");
       
       if(!@mysql_select_db($this->database, $this->connection))
-        $this->error("Couldn't connect to the database : ".$this->database);
+        $this->error("Ќевозможно присоединитс€ к базе данных : ".$this->database);
       
     }
      /* return an array of a query */
