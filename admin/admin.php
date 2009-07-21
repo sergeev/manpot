@@ -106,7 +106,7 @@
         $delid = (int)$_GET["delete"];
         $this->db->del("projects", "id='$delid'", 1);
         $this->db->del("list", "project='$delid'");
-        $this->message("Project deleted.");
+        $this->message("Категория удалена.");
        }
        $this->db->query("SELECT * FROM projects ORDER BY name, mini ASC");
        while($r = $this->db->fetch_array()){

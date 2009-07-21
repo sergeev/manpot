@@ -71,7 +71,7 @@ if($_POST[apikey] == $APIKEY){
         'type' => $type, 'started' => time(), 'finished' => '', 'due' => '', 'assigned' => '');
         $mydb->query_insert("list", $bugData);
 }else{
-    echo "Fail";
+    echo "Неудачно";
 }
     
 
