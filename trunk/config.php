@@ -12,8 +12,6 @@ defined('__bbug') or die();
    $config['minlen_report'] = 20; // минимальное количество символов в описании баг-репорта
    
    
-   $accesslevel="3";
-   
    
    $allowed_types = "gif,jpg,jpeg,png,doc,docx,bmp,zip,rar,7z"; // список доступных для вложений расширений
    define('allowed_types', $allowed_types);
