@@ -15,6 +15,28 @@
     
   $LASTID = $this->db->lastID();
   
+  // Check fileds
+  global $config;
+  $subject = $_POST['subject'];
+  $report = $_POST['report'];
+  if(empty($subject))
+  {
+  	$this->message("<center><h3>Не указано название!</h3></center>");
+  }
+  elseif(empty($report))
+  {
+  	$this->message("<center><h3>Не указано описание ошибки!</h3></center>");
+  }
+  elseif(strlen($subject) < $config['minlen_subject'])
+  {
+  	$this->message("<center><h3>Слишком мало символов в названии!</h3></center>");
+  }
+  elseif(strlen($report) < $config['minlen_report'])
+  {
+  	$this->message("<center><h3>Слишком мало символов в описании!</h3></center>");
+  }
+  else
+  {
   
   // do file uploads
   $target = "";
@@ -47,7 +69,6 @@
   	
   }
   
-  
   $bugData = array('id' => 'null', 'project' => $_POST["project"], 'parent' => 0, 'title' => strip_tags($_POST["subject"]), 
         'report' => nl2br(strip_tags($_POST["report"])), 'status' => '1', 'by' => $reportedby, 'priority' => $_POST["priority"], 
         'type' => $type, 'started' => time(), 'finished' => '', 'due' => '', 'assigned' => '', 'attachment' => $target.$file_name);
@@ -57,6 +78,7 @@
   
 
   
+  }
   }
 ?>
 
@@ -77,13 +99,13 @@
 				<td><label for="subject" >Название</label></td>
 			</tr>
 			<tr>
-				<td><input type="text" class="input" name="subject" /></td>
+				<td><input type="text" class="input" name="subject" value="<?=$subject;?>" /></td>
 			</tr>
 			<tr>
 				<td><label for="subject" >Описание проблемы/решения</label></td>
 			</tr>
 			<tr>
-				<td><textarea name="report" class="textarea"></textarea></td>
+				<td><textarea name="report" class="textarea"><?=$report;?></textarea></td>
 			</tr>
 		</table>
 	</td>
