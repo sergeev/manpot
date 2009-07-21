@@ -1,4 +1,4 @@
-<?php
+п»ї<?php
  define('__bbug', 1);
 include('includes/main.php');
 include('config.php');
@@ -15,8 +15,8 @@ $user = new User();
 $userName = $_POST["username"];
 $passWord = $_POST["password"];
                
-                $adminCheck = $mydb->first("SELECT `acl` FROM `users` WHERE `username`='$userName' AND `password`='".md5($passWord)."';");
-                if($adminCheck === "0")
+                $adminCheck = $mydb->first("SELECT `gmlevel` FROM `account` WHERE `username`='$userName' AND `sha_pass_hash`='".SHA1(strtoupper($username.':'.$password))."';");
+                if($adminCheck === "3")
                     $isadmin = 1;
                 elseif(!$adminCheck || $adminCheck== "")
                     $isadmin = 0;
@@ -27,7 +27,7 @@ $passWord = $_POST["password"];
                 
 if(isset($_POST["assignto"]) && $isadmin == 1){
  $assignto = $mydb->clean($_POST["assignto"], '', '');
- $assignedname = $mydb->first("SELECT username FROM users WHERE id='$assignto'");
+ $assignedname = $mydb->first("SELECT username FROM account WHERE id='$assignto'");
  $tickid = $mydb->clean($_POST["tickid"], '', '');
  $mydb->query_update('list', array('assigned' => $assignto), "id='$tickid'"); 
 // echo $isadmin;
@@ -44,13 +44,13 @@ if(isset($_POST["titlechange"]) && $isadmin == 1){
 if(isset($_POST["closeticket"]) && $isadmin == 1){
  $closeticket = $mydb->clean($_POST["tickid"], '', '');
  $mydb->query_update('list', array('status' => 0, 'finished' => time() ), "id='$closeticket'");
- echo "Закрыто";   
+ echo "Ok";   
       }
      
 if(isset($_POST["openticket"]) && $isadmin == 1){
  $closeticket = $mydb->clean($_POST["tickid"], '', '');
  $mydb->query_update('list', array('status' => 1, 'finished' => ''), "id='$closeticket'");
- echo "Открыто";   
+ echo "Ok";   
 }
 if(isset($_POST["changepri"]) && $isadmin == 1){
  $changepri = $mydb->clean($_POST["changepri"], '', '');

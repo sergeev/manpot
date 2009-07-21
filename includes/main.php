@@ -82,10 +82,11 @@ $("#ProjToggle").toggle(function () {$('#ProjTab').fadeIn();},function () {$('#P
            ?>
                     </div>
                     </td>
+					<td><a href="?cmd=todo">TO-DO</a></td>
                     <td><a href="?cmd=reports">Статистика</a></td>
                     <?php if(isset($_GET["id"]) && $_GET["cmd"]=="view" && $this->user->adminCheck()){ ?>
                     <td></td>
-                    <td onmouseover="thisTicketShow();"><a href="?cmd=view&id=<?php echo $_GET["id"]; ?>">Это Сообщение</a> 
+                    <td onmouseover="thisTicketShow();"><a href="?cmd=view&id=<?php echo $_GET["id"]; ?>"><font size=1 color=red><b>Опции</b></font></a> 
                     <a href="#" style="margin-top: 2px; margin-left: 3px; position: absolute;" id="TICKETMENUUNI" onclick="">
                     	<img src="images/arrow.png" border="0" width="10" height="10" />
                     </a>
@@ -134,15 +135,13 @@ $("#ProjToggle").toggle(function () {$('#ProjTab').fadeIn();},function () {$('#P
      }else
         $this->db->del("list", "id='$bugid'", '1');   
      
-     $this->message("Record deleted.");   
+     $this->message("Запись удалена.");   
     }elseif($cmd == "reports")
         include('report.php');
     elseif($cmd == "edit")
     	include('edit.php');
     elseif($cmd == "bugs")
         include('bugs.php');
-    elseif($cmd == "register")
-        include('register.php');
     elseif($cmd == "features")
         include('features.php');
     elseif($cmd == "view")
