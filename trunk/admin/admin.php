@@ -3,8 +3,8 @@
   // security check
                 $userName = $_SESSION["userName"];
                 $passWord = $_SESSION["passWord"];
-                $adminCheck = $this->db->first("SELECT `acl` FROM `users` WHERE `username`='$userName' AND `password`='".md5($passWord)."';");
-                if($adminCheck != 0 || $adminCheck == "")
+                $adminCheck = $this->db->first("SELECT `gmlevel` FROM `account` WHERE `username`='$userName' AND `sha_pass_hash`='".SHA1(strtoupper($userName.':'.$passWord))."';");
+                if($adminCheck != 3 || $adminCheck == "")
                 die("Forbidden");
   // end
 ?>
@@ -30,7 +30,7 @@
             if(isset($_GET["delete"])){
               $uid = (int)$_GET["delete"];
               $this->db->del('users', "id='$uid'", 1); 
-              $this->message("<center><h3>User Deleted.</h3></center>");  
+              $this->message("<center><h3>Пользователь удален.</h3></center>");  
             }
             ?>
               <h3>Список Пользователей</h3>
@@ -39,17 +39,17 @@
                         <td>ID</td>
                         <td>Username</td>
                         <td>Email</td>
-                        <td>Опции</td>
+                        <td>Уровень доступа</td>
                       </tr>
               <?php
-                $this->db->query("SELECT * FROM `users` ORDER BY `id` ASC");
+                $this->db->query("SELECT * FROM `account` ORDER BY `id` ASC");
                 while($r = $this->db->fetch_array()){
                  ?>
                    <tr>
                         <td><? echo $r["id"];?></td>
                         <td><? echo $r["username"];?></td>
                         <td><? echo $r["email"];?></td>
-                        <td><a href="?admin&adm=listusers&delete=<? echo $r["id"];?>">Удалить</a></td>
+                        <td><? echo $r["gmlevel"];?></td>
                       </tr>
                  <?php   
                 }

@@ -11,7 +11,7 @@
    
    /* user id to name */
    function uidToName($uid){ 
-    $x = $this->first("SELECT username FROM users WHERE id='$uid';");
+    $x = $this->first("SELECT `username` FROM `account` WHERE id='$uid';");
     if($x == "")
         return "Гость";
     else
@@ -23,7 +23,7 @@
               $userName = $_SESSION["userName"];
               $passWord = $_SESSION["passWord"];
                
-                $uid = $this->first("SELECT `id` FROM `users` WHERE `username`='$userName' AND `password`='".md5($passWord)."';");
+                $uid = $this->first("SELECT `id` FROM `account` WHERE `username`='$userName' AND `sha_pass_hash`='".SHA1(strtoupper($userName.':'.$passWord))."';");
                 return $uid;
    }else{
     return 0;
@@ -34,7 +34,7 @@
       if($var == "0")
         return "Not Assigned";
       else
-        return $this->first("SELECT username FROM users WHERE id='".$this->clean($var, '', '')."'");
+        return $this->first("SELECT username FROM account WHERE id='".$this->clean($var, '', '')."'");
   }
   
    function loginForm(){
@@ -51,7 +51,7 @@
           $passWord = $this->clean($_POST["password"], '', '');
           
           // see if they exist in the db and if theyre PWs match, otherwise error out.
-            $result = $this->first("SELECT count(*) FROM `users` WHERE `username`='$userName' AND `password`='".md5($passWord)."';");
+            $result = $this->first("SELECT count(*) FROM `account` WHERE `username`='$userName' AND `sha_pass_hash`='".SHA1(strtoupper($userName.':'.$passWord))."';");
             if($result == 1){ // success
                $_SESSION["userName"] = $userName;
                $_SESSION["passWord"] = $passWord; 
@@ -63,8 +63,8 @@
               $userName = $_SESSION["userName"];
               $passWord = $_SESSION["passWord"];
                
-                $adminCheck = $this->first("SELECT `acl` FROM `users` WHERE `username`='$userName' AND `password`='".md5($passWord)."';");
-                if($adminCheck == 0)
+                $adminCheck = $this->first("SELECT `gmlevel` FROM `account` WHERE `username`='$userName' AND `sha_pass_hash`='".SHA1(strtoupper($userName.':'.$passWord))."';");
+                if($adminCheck == 3)
                     $admin = "<a href='?admin'><small>(admin)</small></a>";
                 else
                     $admin = "";
@@ -77,7 +77,6 @@
                  <input class="loginForm" style='width: 75px;' id='Lpassword' type="password" name="password"  />
                  <input type="submit" name="login" value="Войти" />
                  <div sytle='position: relative; top: 30px;'><small>Логин <span style='padding-left: 51px;'>Пароль</span>
-                 <span style='padding-left: 42px;'><a href="?cmd=register">Регистрация</a></span>
                  </small></div>
           </form>
         <?php
@@ -90,8 +89,8 @@
               $userName = mysql_escape_string($_SESSION["userName"]);
               $passWord = mysql_escape_string($_SESSION["passWord"]);
                
-                $adminCheck = $this->first("SELECT `acl` FROM `users` WHERE `username`='$userName' AND `password`='".md5($passWord)."';");
-                if($adminCheck == 0)
+                $adminCheck = $this->first("SELECT `gmlevel` FROM `account` WHERE `username`='$userName' AND `sha_pass_hash`='".SHA1(strtoupper($userName.':'.$passWord))."';");
+                if($adminCheck == 3)
                     return true;
    }else{
     return false;

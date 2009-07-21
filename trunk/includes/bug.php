@@ -540,11 +540,11 @@ class View extends Bugs {
         </table> 
      </div>
       <?php 
-      $unfinished = $this->db->first("SELECT count(*) FROM `list` WHERE `parent`='0' AND `project`='$r[id]' AND `status`='1' AND `type`='1'");
-      $finished = $this->db->first("SELECT count(*) FROM `list` WHERE `parent`='0' AND `project`='$r[id]' AND `status`='0' AND `type`='1'");
+      $unfinished = $this->db->first("SELECT count(*) FROM `list` WHERE `parent`='0' AND `project`='$r[id]' AND `status`='1' AND `type`='0'");
+      $finished = $this->db->first("SELECT count(*) FROM `list` WHERE `parent`='0' AND `project`='$r[id]' AND `status`='0' AND `type`='0'");
         if($unfinished == 0) $unfinished = $finished; 
       $percent = @round(($finished/$unfinished), 2);
-      $backgroundpos = 300-($percent*100*3);
+      $backgroundpos = 300-($percent * 100 * 3);
       //echo ;
       ?>
      <div>

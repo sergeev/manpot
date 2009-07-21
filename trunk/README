@@ -49,10 +49,8 @@ MaNPOT(Massive Network Php Open bugTracker )- это программа, разработанная на яз
 
 Установка проходит в несколько этапов.
 
-   1. Создайте БД для MaNPOT
+   1. Импортируйте SQL/manpot_structure.sql в БД realmd
    2. Отредактируйте config.php
-   3. Выполните install.php, там же создайте аккаунт администратора
-   4. Удалите install.php
 
 
     Пояснения
