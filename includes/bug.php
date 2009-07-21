@@ -485,13 +485,13 @@ class View extends Bugs {
 				<td><label for="subject" >Название</label></td>
 			</tr>
 			<tr>
-				<td><input type="text" class="input" name="subject" /></td>
+				<td><input type="text" class="input" name="subject" value="<?=$_POST['subject'];?>" /></td>
 			</tr>
 			<tr>
 				<td><label for="subject" >Комментарий</label></td>
 			</tr>
 			<tr>
-				<td><textarea name="report" class="textarea"></textarea></td>
+				<td><textarea name="report" class="textarea"><?=$_POST['report'];?></textarea></td>
 			</tr>
 			<tr>
 				<td><label for="attachment">Вложение</label></td>
