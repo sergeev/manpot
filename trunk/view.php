@@ -6,7 +6,16 @@
   $bugView = new View($this->db);
   
 if(isset($_POST["submitReport"])){ 
-  
+   if(empty($_POST['subject']))
+  {
+  	$this->message("<center><h3>Не указано название!</h3></center>");
+  }
+  elseif(empty($_POST['report']))
+  {
+  	$this->message("<center><h3>Отсутствует комментарий!</h3></center>");
+  }
+  else
+  { 
    // do file uploads
   $target = "";
   $file_name = "";
@@ -45,7 +54,9 @@ if(isset($_POST["submitReport"])){
         'type' => 0, 'started' => time(), 'finished' => '', 'due' => '', 'assigned' => '', 'attachment' => $target.$file_name);
                 $this->db->query_insert('list', $bugData);
                 $this->message("<center><h3>Комментарий добавлен.</h3></center>");
-  
+                  unset($_POST);
+				  
+  }
   }
 ?>  
 <?php 
