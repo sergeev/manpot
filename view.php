@@ -1,6 +1,7 @@
 <?php
   defined('__bbug') or die(); 
   $bugid = $this->db->clean($_GET["id"], '', '');
+  $open = $this->db->clean($_GET["open"], '', '');
   $reportedby = $this->user->getUID();
   
   $bugView = new View($this->db);
@@ -8,11 +9,11 @@
 if(isset($_POST["submitReport"])){ 
    if(empty($_POST['subject']))
   {
-  	$this->message("<center><h3>Не указано название!</h3></center>");
+  	$this->message("<center><h3>РќРµ СѓРєР°Р·Р°РЅРѕ РЅР°Р·РІР°РЅРёРµ!</h3></center>");
   }
   elseif(empty($_POST['report']))
   {
-  	$this->message("<center><h3>Отсутствует комментарий!</h3></center>");
+  	$this->message("<center><h3>РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РєРѕРјРјРµРЅС‚Р°СЂРёР№!</h3></center>");
   }
   else
   { 
@@ -33,13 +34,13 @@ if(isset($_POST["submitReport"])){
   		if(move_uploaded_file($_FILES['attachment']['tmp_name'], $target.$file_name)){
   			//echo ""
   		}else{
-  			echo "<center>Ваше сообщение было опубликовано, но вложение не было загружено. Свяжитесь с Системным Администратором для проверки доступа к загрузке файлов.</center>";
+  			echo "<center>Р’Р°С€Рµ СЃРѕРѕР±С‰РµРЅРёРµ Р±С‹Р»Рѕ РѕРїСѓР±Р»РёРєРѕРІР°РЅРѕ, РЅРѕ РІР»РѕР¶РµРЅРёРµ РЅРµ Р±С‹Р»Рѕ Р·Р°РіСЂСѓР¶РµРЅРѕ. РЎРІСЏР¶РёС‚РµСЃСЊ СЃ РЎРёСЃС‚РµРјРЅС‹Рј РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРј РґР»СЏ РїСЂРѕРІРµСЂРєРё РґРѕСЃС‚СѓРїР° Рє Р·Р°РіСЂСѓР·РєРµ С„Р°Р№Р»РѕРІ.</center>";
   			$file_name = "";
   			$target = "";
   			
   		}
   	}else{
-  		echo "Ваше сообщение было опубликовано, но вложение не было загружено. Запрещенный тип файла.";
+  		echo "Р’Р°С€Рµ СЃРѕРѕР±С‰РµРЅРёРµ Р±С‹Р»Рѕ РѕРїСѓР±Р»РёРєРѕРІР°РЅРѕ, РЅРѕ РІР»РѕР¶РµРЅРёРµ РЅРµ Р±С‹Р»Рѕ Р·Р°РіСЂСѓР¶РµРЅРѕ. Р—Р°РїСЂРµС‰РµРЅРЅС‹Р№ С‚РёРї С„Р°Р№Р»Р°.";
   		$file_name = "";
   			$target = "";
   	}
@@ -50,25 +51,44 @@ if(isset($_POST["submitReport"])){
   
   $bugData = array('id' => 'null', 'project' => $this->db->first("SELECT `project` FROM list WHERE `id`='$bugid'", 0, 0),
   'parent' => $bugid, 'title' => $_POST["subject"], 
-        'report' => nl2br(strip_tags($_POST["report"])), 'status' => '', 'by' => $reportedby, 'priority' => 0, 
-        'type' => 0, 'started' => time(), 'finished' => '', 'due' => '', 'assigned' => '', 'attachment' => $target.$file_name);
+        'report' => nl2br(strip_tags($_POST["report"])), 'status' => '0', 'by' => $reportedby, 'priority' => 0, 
+        'type' => 0, 'started' => time(), 'finished' => '0', 'due' => '0', 'assigned' => '0', 'character' => $_POST["character"], 'attachment' => $target.$file_name);
                 $this->db->query_insert('list', $bugData);
-                $this->message("<center><h3>Комментарий добавлен.</h3></center>");
+                $this->message("<center><h3>РљРѕРјРјРµРЅС‚Р°СЂРёР№ РґРѕР±Р°РІР»РµРЅ.</h3></center>");
                   unset($_POST);
 				  
   }
-  }
+  }elseif(isset($_POST['deletecomm'])){
+     //check if its parent ticket
+	$commentidid = $this->db->clean($_POST["deletecomm"], '', '');
+    $this->db->del("list", "id='$commentidid'", '1');     
+    Main::message("Р—Р°РїРёСЃСЊ СѓРґР°Р»РµРЅР°.");   
+   }
 ?>  
+<script>    
+function deletetd(id){
+    var c = confirm("РЈРґР°Р»РёС‚СЊ СЌС‚РѕС‚ СЃРїРёСЃРѕРє?");
+    if(c)
+       	document.getElementById('delete'+id).submit();
+    }
+</script>
 <?php 
 // view original ticket 
 if($bugid > 0){
 $bugView->original($bugid);
 
 $bugView->responses($bugid);
-
-$bugView->reply($bugid);
+	if ($open==1 || $this->user->adminCheck()){
+		if((REGISTERED == 1 && $this->user->getUID() != 0) || !REGISTERED){  
+			$bugView->reply($bugid);
+		}else{
+			Main::message_error("РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ СѓСЃС‚Р°РЅРѕРІРёР» С‚СЂРµР±РѕРІР°РЅРёРµ РІС…РѕРґР° РґР»СЏ РїСѓР±Р»РёРєР°С†РёРё РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ.");
+		}
+	} else {
+		Main::message_error("РљРѕРјРјРµРЅС‚Р°СЂРёРё РІ Р·Р°РєСЂС‹С‚РѕР№ С‚РµРјРµ Р·Р°РїСЂРµС‰РµРЅС‹.");
+	}
 }else{
-	echo "Неверный номер сообщения.";
+	echo "РќРµРІРµСЂРЅС‹Р№ РЅРѕРјРµСЂ СЃРѕРѕР±С‰РµРЅРёСЏ.";
 }
 ?>
 <div class="clear"></div>

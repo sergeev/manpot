@@ -11,11 +11,11 @@
 <table width="100%" align="center" cellspacing="0" cellpadding="0">
 	<tr>
 		<td valign="top" id="adminLeft" width="150">
-			<div id="headings-small">Категории</div>
-   			<a href="?admin&adm=addproject">Добавить Категорию</a>
-   			<a href="?admin&adm=listprojects">Список Категорий</a>
-			<div id="headings-small">Пользователи</div>
-   			<a href="?admin&adm=listusers">Список Пользователей </a>
+			<div id="headings-small">РљР°С‚РµРіРѕСЂРёРё</div>
+   			<a href="?admin&adm=addproject">Р”РѕР±Р°РІРёС‚СЊ РљР°С‚РµРіРѕСЂРёСЋ</a>
+   			<a href="?admin&adm=listprojects">РЎРїРёСЃРѕРє РљР°С‚РµРіРѕСЂРёР№</a>
+			<div id="headings-small">РџРѕР»СЊР·РѕРІР°С‚РµР»Рё</div>
+   			<a href="?admin&adm=listusers">РЎРїРёСЃРѕРє РџРѕР»СЊР·РѕРІР°С‚РµР»РµР№ </a>
 		</td>
 		
 		
@@ -30,16 +30,16 @@
             if(isset($_GET["delete"])){
               $uid = (int)$_GET["delete"];
               $this->db->del('users', "id='$uid'", 1); 
-              $this->message("<center><h3>Пользователь удален.</h3></center>");  
+              $this->message("<center><h3>РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ СѓРґР°Р»РµРЅ.</h3></center>");  
             }
             ?>
-              <h3>Список Пользователей</h3>
+              <h3>РЎРїРёСЃРѕРє РџРѕР»СЊР·РѕРІР°С‚РµР»РµР№</h3>
               <table width="550" border="0" cellspacing="2" align="center">
                       <tr style='font-weight: bold;'>
                         <td>ID</td>
                         <td>Username</td>
                         <td>Email</td>
-                        <td>Уровень доступа</td>
+                        <td>РЈСЂРѕРІРµРЅСЊ РґРѕСЃС‚СѓРїР°</td>
                       </tr>
               <?php
                 $this->db->query("SELECT * FROM `account` ORDER BY `id` ASC");
@@ -62,29 +62,29 @@
                 // name mini description
                 $bugData = array('id' => 'null', 'name' => $_POST["name"], 'mini' => $_POST["mini"], 'description' => $_POST["description"]);
                 $this->db->query_insert('projects', $bugData);
-                $this->message("<center><h3>Категория Добавлена.</h3></center>");
+                $this->message("<center><h3>РљР°С‚РµРіРѕСЂРёСЏ Р”РѕР±Р°РІР»РµРЅР°.</h3></center>");
             }
             ?>
-              <h3>Добавить Категорию</h3>
+              <h3>Р”РѕР±Р°РІРёС‚СЊ РљР°С‚РµРіРѕСЂРёСЋ</h3>
               <form name="" method="POST">
               <table width="400" border="0" cellspacing="2" align="center">
                 <tr>
-                     <td valign="top">Название:</td>
-                     <td valign="top"><input name="name" id="name" onclick="this.form.name.select();" class="input" value="{Пусто}" /></td>
+                     <td valign="top">РќР°Р·РІР°РЅРёРµ:</td>
+                     <td valign="top"><input name="name" id="name" onclick="this.form.name.select();" class="input" value="{РџСѓСЃС‚Рѕ}" /></td>
                 </tr>
                  <tr>
-                     <td valign="top">Версия:</td>
+                     <td valign="top">Р’РµСЂСЃРёСЏ:</td>
                      <td valign="top"><input name="mini" class="input"  value="1.0" /> <br /></td>
                 </tr>
                 
                 <tr>
-                     <td valign="top">Короткое Описание:</td>
+                     <td valign="top">РљРѕСЂРѕС‚РєРѕРµ РћРїРёСЃР°РЅРёРµ:</td>
                      <td valign="top"><textarea class="textinput" name="description"></textarea></td>
                 </tr>
-                <tr> <td colspan="2" align="center"><input type="submit" style='width: 200px;' name="add_project" onclick="$('#working').fadeIn();" value="+ Добавить Категорию"></td></tr>
+                <tr> <td colspan="2" align="center"><input type="submit" style='width: 200px;' name="add_project" onclick="$('#working').fadeIn();" value="+ Р”РѕР±Р°РІРёС‚СЊ РљР°С‚РµРіРѕСЂРёСЋ"></td></tr>
               </table>    
               </form>                                  
-             <div id="working"><img src="/loader.gif" id="loader" /> <b>В Процессе...</b></div> 
+             <div id="working"><img src="/loader.gif" id="loader" /> <b>Р’ РџСЂРѕС†РµСЃСЃРµ...</b></div> 
             <?php
         }
         
@@ -94,12 +94,12 @@
     		$this->message("Client Exec URL updated.");
     	}
      ?>
-       <h3>Категории</h3>
+       <h3>РљР°С‚РµРіРѕСЂРёРё</h3>
        <table width="500" align="center" cellspacing="2" cellpadding="2" border="0">
        <tr>
-       <td><b>Категория</b></td>
-       <td><b>Версия</b></td>
-       <td><b>Опции</b></td>
+       <td><b>РљР°С‚РµРіРѕСЂРёСЏ</b></td>
+       <td><b>Р’РµСЂСЃРёСЏ</b></td>
+       <td><b>РћРїС†РёРё</b></td>
        </tr>
        <?
        if(isset($_GET["delete"])){
@@ -117,7 +117,7 @@
         echo "<tr>";
         echo "<td>$r[name]</td>";
         echo "<td>$r[mini]</td>";
-        echo "<td><a href='?admin&adm=listprojects&delete=$r[id]'>Удалить</a></td>";
+        echo "<td><a href='?admin&adm=listprojects&delete=$r[id]'>РЈРґР°Р»РёС‚СЊ</a></td>";
         echo "</tr>";
         echo "<tr>";
         echo "<td colspan='3'>";

@@ -13,30 +13,26 @@
     function tableHeader(){
      ?>
      <script>$(document).ready(function() { $('#list').tablesorter(); } ); </script>
-     <table width="95%" id="list" class="tablesorter" border="0" align="center" cellpadding="0" cellspacing="0">
+     <table width="100%" id="list" class="tablesorter" border="0" align="center" cellpadding="0" cellspacing="0">
       <thead>
       <tr>
-              <th>#</th>
-              <th>Тип</th> 
-              <th width="45%">Название</th>
-              <th width="25">Статус</th>
+              <td class="rankingHeader">#</td>
+              <td class="rankingHeader">РўРёРї</td> 
+              <td class="rankingHeader" width="45%">РќР°Р·РІР°РЅРёРµ</td>
+              <td class="rankingHeader" width="25">РЎС‚Р°С‚СѓСЃ</td>
               <?php /* taken out to reduce clutter <th>By</th> */ ?>
-              <th>Категория</th>
-              <th width="75">Приоритет</th>
-              <th width="150">Сообщено</th>
-              <th>Исправлено</th>
+              <td class="rankingHeader">РљР°С‚РµРіРѕСЂРёСЏ</td>
+              <td class="rankingHeader" width="75">РџСЂРёРѕСЂРёС‚РµС‚</td>
+              <td class="rankingHeader" width="150">РЎРѕРѕР±С‰РµРЅРѕ</td>
+              <td class="rankingHeader">РСЃРїСЂР°РІР»РµРЅРѕ</td>
+			  <?php if ($this->user->adminCheck()){ ?><td class="rankingHeader">РЈРґР°Р»РёС‚СЊ</td><?php } ?>
               </tr>
       </thead>
       <tbody>
       
      <?php    
     }
-    /* userid to name */
-    function uidToName($uid){
-       $name = $this->db->first("SELECT `username` FROM `users` WHERE `id`='$uid'"); 
-       if($name == "") return "Anonymous";
-       else return $name;   
-    }
+
      /* take a pid and get its name */
     function ProjectIDtoName($id){
         return $this->db->first("SELECT `name` FROM projects WHERE `id`='$id'");
@@ -44,6 +40,11 @@
     
     /* create the bug list */
     function bblist($type=-1){
+		if(isset($_POST['deleterer'])){
+			$tdid = $this->db->clean($_POST['deleterer'], '', '');
+        	$this->db->del("list", "`id`='$tdid'", 1);
+        	Main::message("Report deleted.");
+        }
         if(isset($_GET["page"]))
         	$page = $_GET["page"];
         else
@@ -90,25 +91,31 @@
             $cssclass = "L2";
           elseif($cssclass == "L2") 
           $cssclass = "L1";
-       ?>   
+       ?>   <script>
+            function deletetd(id){
+            	var c = confirm("РЈРґР°Р»РёС‚СЊ СЌС‚РѕС‚ СЃРїРёСЃРѕРє?");
+            	if(c)
+            		document.getElementById('delete'+id).submit();
+            }
+          </script> 
          <tr class="<?php echo $cssclass;?>">
         <td align="center"><?php echo $r["id"];?></td>
         <td width="16" align="center"><div style='position: relative;'><img src="<?php echo $this->img($r["type"]);?>" style='' />
         <?php if($r["status"] == 0){ ?><img id=cansel src="images/cancel.png"/><?php } ?></div></td>
-        <td><a href="?cmd=view&id=<?php echo $r["id"];?>"><?php if($r["title"] == "") echo "[Без Названия]"; else echo $r["title"];?></a>
+        <td><a href="?cmd=view&id=<?php echo $r["id"];?>&open=<?php echo $r["status"];?>"><?php if($r["title"] == "") echo "[Р‘РµР· РќР°Р·РІР°РЅРёСЏ]"; else echo $r["title"];?></a>
 		<?php $comments = $this->db->first("SELECT COUNT(*) FROM list WHERE parent=".$r["id"].";");
 		if($comments!=0) {
-			echo "<font color=#A9A9A9 size=1>[Комментариев: $comments]</font>";
+			echo "<font color=#A9A9A9 size=1>[РљРѕРјРјРµРЅС‚Р°СЂРёРµРІ: $comments]</font>";
 			}
 		?>
 		</td>
         <td align="center"><?php if($r["status"] == 1)
-                                echo "Открыто";
+                                echo "РћС‚РєСЂС‹С‚Рѕ";
                                 else
-                                    echo "Закрыто"; ?></td>
+                                    echo "Р—Р°РєСЂС‹С‚Рѕ"; ?></td>
        <?php
         /* <td> Taken out to reduce clutter 
-        if($r[by] == 0) echo "Гость";
+        if($r[by] == 0) echo "Р“РѕСЃС‚СЊ";
         else echo $this->user->uidToName($r[by]);
         </td>
         */
@@ -119,22 +126,25 @@
         <td><?php
         
         if($r["finished"] == 0)
-            echo "Никогда";
+            echo "РќРёРєРѕРіРґР°";
         else echo $this->the_date($r["finished"]);
         
         ?></td>
+		<?php
+		if($this->user->adminCheck()){
+              	echo "<td><form name='' style='margin: 0; padding: 0; float: left; ' method='post' action='' id='delete$r[id]'><input type='hidden' name='deleterer' value='$r[id]' /></form><input type='image' src='images/bin_closed.png' onclick='deletetd($r[id]);' name='delete' /></td>";
+              }?>
         </tr><?php 
       }
        ?>
          
        </tbody>
        <?php 
-       if(REGISTERED == 0 || $_SESSION["userName"]){
+       if(REGISTERED == 0 || isset($_SESSION["userName"])){
        $this->quickadd(); } ?>
        </table>
        
-     <div style="width: 90%;" width="90%" id="subnav">
-     <div style="float: left;"> 
+     <div style="width: 100%;" width="100%" id="subnav">     
      <?php
      
      
@@ -146,7 +156,6 @@
             $this->db->paginate("SELECT * FROM list WHERE `parent`='0' ".$_SESSION['esql']." ORDER BY `id`  DESC;"); 
             
      ?>
-     </div>
      </div>
      
      <div style="clear:both;"/></div>
@@ -161,9 +170,9 @@
   /* hover menu */
    function adminPriHover($id, $current){
       $adminCheck = $this->user->adminCheck();
-      if($current == 1) $current = "Высокий";
-      elseif($current == 2) $current = "Средний";
-      elseif($current == 3) $current = "Низкий";
+      if($current == 1) $current = "Р’С‹СЃРѕРєРёР№";
+      elseif($current == 2) $current = "РЎСЂРµРґРЅРёР№";
+      elseif($current == 3) $current = "РќРёР·РєРёР№";
    ?>
    <a href="javascript:void(<?php echo $current;?>);" id="<?php echo $id;?>PriB"><?php echo $current;?></a>
    <?php if($adminCheck == true) { ?>     
@@ -172,9 +181,9 @@ $("#<?php echo $id;?>PriB").toggle(function () {$('#<?php echo $id;?>Pri').fadeI
         });
       </script>
       <div id="<?php echo $id;?>Pri" class="PriMenu" style='position: absolute; z-index: 99; border: 1px dotted #ababab; margin-left: -5px; background-color: #EFEFEF; width: 50px; margin-top: -55px;'>
-      <a href="javascript:;" onclick="$.post('ajax.php', { changepri: '1', id: '<?php echo $id;?>', username: '<?php echo $_SESSION["userName"];?>', password: '<?php echo $_SESSION["passWord"];?>' } ); $('#<?php echo $id;?>PriB').empty(); $('#<?php echo $id;?>PriB').append('Высокий');">Высокий</a>
-      <a href="javascript:;" onclick="$.post('ajax.php', { changepri: '2', id: '<?php echo $id;?>', username: '<?php echo $_SESSION["userName"];?>', password: '<?php echo $_SESSION["passWord"];?>' } ); $('#<?php echo $id;?>PriB').empty(); $('#<?php echo $id;?>PriB').append('Средний');">Средний</a>
-      <a href="javascript:;" onclick="$.post('ajax.php', { changepri: '3', id: '<?php echo $id;?>', username: '<?php echo $_SESSION["userName"];?>', password: '<?php echo $_SESSION["passWord"];?>' } ); $('#<?php echo $id;?>PriB').empty(); $('#<?php echo $id;?>PriB').append('Низкий');">Низкий</a></div> 
+      <a href="javascript:;" onclick="$.post('ajax.php', { changepri: '1', id: '<?php echo $id;?>', username: '<?php echo $_SESSION["userName"];?>', password: '<?php echo $_SESSION["passWord"];?>' } ); $('#<?php echo $id;?>PriB').empty(); $('#<?php echo $id;?>PriB').append('Р’С‹СЃРѕРєРёР№');">Р’С‹СЃРѕРєРёР№</a>
+      <a href="javascript:;" onclick="$.post('ajax.php', { changepri: '2', id: '<?php echo $id;?>', username: '<?php echo $_SESSION["userName"];?>', password: '<?php echo $_SESSION["passWord"];?>' } ); $('#<?php echo $id;?>PriB').empty(); $('#<?php echo $id;?>PriB').append('РЎСЂРµРґРЅРёР№');">РЎСЂРµРґРЅРёР№</a>
+      <a href="javascript:;" onclick="$.post('ajax.php', { changepri: '3', id: '<?php echo $id;?>', username: '<?php echo $_SESSION["userName"];?>', password: '<?php echo $_SESSION["passWord"];?>' } ); $('#<?php echo $id;?>PriB').empty(); $('#<?php echo $id;?>PriB').append('РќРёР·РєРёР№');">РќРёР·РєРёР№</a></div> 
       <?php } ?>
     
     
@@ -188,9 +197,9 @@ $("#<?php echo $id;?>PriB").toggle(function () {$('#<?php echo $id;?>Pri').fadeI
   }  
    function quickadd(){
        if(isset($_POST["quickadd"])){
-        $bugData = array('id' => 'null', 'project' => $_POST[project], 'parent' => 0, 'title' => strip_tags($_POST[title]), 
+        $bugData = array('id' => 'null', 'project' => $_POST["project"], 'parent' => 0, 'title' => strip_tags($_POST["title"]), 
         'report' => $_POST[report], 'status' => '1', 'by' => $reportedby, 'priority' => 3, 
-        'type' => $_POST[type], 'started' => time(), 'finished' => '', 'due' => '', 'assigned' => '');
+        'type' => $_POST[type], 'started' => time(), 'finished' => '0', 'due' => '0', 'character' => $_POST["character"], 'assigned' => '0');
         $this->db->query_insert("list", $bugData);
        	   echo "<script>window.location='index.php';</script>";   
               
@@ -222,9 +231,9 @@ $("#<?php echo $id;?>PriB").toggle(function () {$('#<?php echo $id;?>Pri').fadeI
                 echo '<option value="'.$r['id'].'">'.$r['name'].'</option>';
            ?>
     </select>
-    <input name="title" id='title' class="quick" style="width: 400px;" onfocus="quickAdd()" onblur="quickAddU()" value="Быстрая отправка сообщения... " />
+    <input name="title" id='title' class="quick" style="width: 400px;" onfocus="quickAdd()" onblur="quickAddU()" value="Р‘С‹СЃС‚СЂР°СЏ РѕС‚РїСЂР°РІРєР° СЃРѕРѕР±С‰РµРЅРёСЏ... " />
      
-     <input type="submit" name="quickadd" value="Добавить">
+     <input type="submit" name="quickadd" value="Р”РѕР±Р°РІРёС‚СЊ">
      </td>
      </tr>
      </form>
@@ -241,8 +250,7 @@ class View extends Bugs {
     }
     
     /* from php.net or something -- regex to convert text-links to html links */
-    function make_clickable($text, $ce, $git)
-    {
+    function make_clickable($text, $ce, $git){
        
         if (ereg("[\"|'][[:alpha:]]+://",$text) == false)
         {
@@ -273,7 +281,7 @@ class View extends Bugs {
     	<form name="" method="POST" action="">
 <table width="90%" cellspacing="2" align="center">
 <tr>
-<td colspan="2"><div id="headings">Редактировать Комментарий #<?php echo $commentid; ?></div>
+<td colspan="2"><div id="headings">Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РљРѕРјРјРµРЅС‚Р°СЂРёР№ #<?php echo $commentid; ?></div>
 </td>
 </tr>
 
@@ -281,37 +289,36 @@ class View extends Bugs {
 	<td valign="top" width="50%">
 		<table width="100%" cellspacing="2" align="center">
 			<tr>
-				<td><label for="subject" >Название</label></td>
+				<td><label for="subject" >РќР°Р·РІР°РЅРёРµ</label></td>
 			</tr>
 			<tr>
 				<td><input type="text" value="<?php echo $title; ?>"class="input" name="subject" /></td>
 			</tr>
 			<tr>
-				<td><label for="subject" >Комментарий</label></td>
+				<td><label for="subject" >РљРѕРјРјРµРЅС‚Р°СЂРёР№</label></td>
 			</tr>
 			<tr>
 				<td><textarea name="report" class="textarea"><?php echo str_replace('<br />', '', $report); ?></textarea></td>
 			</tr>
 			<tr>
-				<td><div id="working"><img src="/loader.gif" id="loader" /> <b>В Процессе...</b></div> 
+				<td><div id="working"><img src="/loader.gif" id="loader" /> <b>Р’ РџСЂРѕС†РµСЃСЃРµ...</b></div> 
 
-            </div> <input type="submit" name="save" value="Сохранить" onclick="$('#working').fadeIn(); document.getElementById('working').style.visibility='visible';"></td>
+            </div> <input type="submit" name="save" value="РЎРѕС…СЂР°РЅРёС‚СЊ" onclick="$('#working').fadeIn(); document.getElementById('working').style.visibility='visible';"></td>
 			</tr>
 		</table>
 	</td>
 	</tr>
 	</table>
-</td></tr>
-</table>
+		</form>
     	<?php
     	}else{
-    		echo "Доступ запрещен";
+    		echo "Р”РѕСЃС‚СѓРї Р·Р°РїСЂРµС‰РµРЅ";
     	}
     }
     
     function original($bugid){
     $q = $this->db->query("SELECT * FROM list WHERE `id`='$bugid'");
-	
+
 
         while($r = $this->db->fetch_array()){
         	$this->clientexec = $this->db->first("SELECT client_exec FROM projects WHERE `id`='".$r["project"]."' ");
@@ -332,36 +339,46 @@ class View extends Bugs {
          	<?php
          }
          ?>
-         <table class="bugreport alt1" align="center">
+        <table class="bugreport alt1" align="center">
          	<tr>
-         		<td><div id="headings" style="float: left;" class="dark">
-         		<img src="<?php echo $this->img($r["type"]);?>" style='' /> <?php echo $r["title"];?></div>
-         		<?php if( $this->user->adminCheck() ){ ?><div style="float: right;"><small class="small"><a href="?cmd=edit&parent=<?php echo $_GET["id"]; ?>&commentid=<?php echo $r["id"]; ?>">редактировать</a></small></div><?php } ?>
+         		<td>
+					<div id="headings" style="float: left;" class="dark">
+						<img src="<?php echo $this->img($r["type"]);?>" style='' /> <?php echo $r["title"];?>
+					</div>
+					<?php if( $this->user->adminCheck() ){ ?>
+					<div style="float: right;">
+						<small class="small">
+							<a href="?cmd=edit&parent=<?php echo $_GET["id"]; ?>&commentid=<?php echo $r["id"]; ?>">СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ</a>
+						</small>
+					</div>
+					<?php } ?>
          		</td>
          	</tr>
          	<tr>
-         		<td><div id="subheading" >Сообщил <?php echo $this->user->uidToName($r["by"]);?> | <?php echo date("M, d Y H:m:A",$r["started"]); ?></div>
-         		
+         		<td>
+					<div id="subheading" >РЎРѕРѕР±С‰РёР» <?php echo $this->user->uidToName($r["by"]);?> | <?php if ($r["character"]!=0) echo "РџРµСЂСЃРѕРѕРЅР°Р¶ ".$this->user->charuidToName($r["character"])." | "; echo date("M, d Y H:m:A",$r["started"]); ?></div>         		
          		</td>
          	</tr>
          	<tr>
-         	<td id="reportarea"><?php echo stripslashes($this->make_clickable($r["report"], $this->clientexec, $this->git )); ?></td>
+				<td id="reportarea">
+					<?php echo stripslashes($this->make_clickable($r["report"], $this->clientexec, $this->git )); ?>
+				</td>
          	</tr>
-         	<?php
-         	
+         	<?php         	
          	if(strlen($r["attachment"]) > 0){
          		$fn = strpos($r["attachment"], '-');
-         		
-         		
-         		?>
+			?>
          			<tr>
-         			<td><div id="headings-small">Вложение</div></td>
+						<td>
+							<div id="headings-small">Р’Р»РѕР¶РµРЅРёРµ</div>
+						</td>
          			</tr>
-         			<tr><td><a href="<?php echo $r["attachment"]; ?>" target="_blank"><?php echo str_replace('uploads/', '',substr($r["attachment"], 0, $fn)); ?></a></td></tr>
-         		<?php
-         	}
-         	
-         	?>
+         			<tr>
+						<td>
+							<a href="<?php echo $r["attachment"]; ?>" target="_blank"><?php echo str_replace('uploads/', '',substr($r["attachment"], 0, $fn)); ?></a>
+						</td>
+					</tr>
+         		<?php  	}	?>
          </table>
          
            <?php /*<table width="90%" class="bugreport" align="center">
@@ -373,8 +390,8 @@ class View extends Bugs {
                         <img src="<?php echo $this->img($r["type"]);?>" style='' /> <hr style='border: 0;'>
                        <b> Assigned to:</b> <br /><span id="assto"><?php echo $this->user->assigned($r["assigned"]);?></span>  <hr  style='border: 0;'>
                         <b>Priority:</b> <br /><?php echo $this->adminPriHover($r["id"], $r["priority"]);?>  <br>     <br>
-                        <b>Status</b>: <span id="status"><?php if($r["status"] == 1) echo "Открыто";
-                                        else  echo "Закрыто"; ?></span>
+                        <b>Status</b>: <span id="status"><?php if($r["status"] == 1) echo "РћС‚РєСЂС‹С‚Рѕ";
+                                        else  echo "Р—Р°РєСЂС‹С‚Рѕ"; ?></span>
                    </td>
                         <td valign="top">
                         
@@ -412,36 +429,50 @@ class View extends Bugs {
             elseif($cssclass == "alt2")
             	$cssclass = "alt1";
          ?>
+
          <table width="80%" class="bugreport <?php echo $cssclass; ?>" align="center" onmouseover="$('#<?php echo $r["id"];?>edit').css('visibility','visible');$('#<?php echo $r["id"];?>edit').css('display','block'); " onmouseout="$('#<?php echo $r["id"];?>edit').css('visibility','hidden');$('#<?php echo $r["id"];?>edit').css('display','none'); ">
          	<tr>
-         		<td><div id="headings" style="float: left; "class="dark"><?php echo $r["title"];?></div>
-         		<?php if( $this->user->adminCheck() ){ ?><div style="float: right; visibility: hidden; display: none;" id="<?php echo $r["id"];?>edit"><small class="small"><a href="?cmd=edit&parent=<?php echo $_GET["id"]; ?>&commentid=<?php echo $r["id"]; ?>">редактировать</a></small></div><?php } ?>
+         		<td>
+					<div id="headings" style="float: left; "class="dark">
+						<?php echo $r["title"];?>
+					</div>
+					<?php if( $this->user->adminCheck() ){ ?>
+					<div style="float: right; visibility: hidden; display: none;" id="<?php echo $r["id"];?>edit">
+						<small class="small">
+						<form name='' style='margin: 0; padding: 0; float: left; ' method='post' action='' id='delete<?php echo $r["id"]; ?>'><input type='hidden' name='deletecomm' value='<?php echo $r["id"];?>' /></form><input type='image' src='images/bin_closed.png' onclick='deletetd(<?php echo $r["id"];?>);' name='delete' />
 
+							<a href="?cmd=edit&parent=<?php echo $_GET["id"]; ?>&commentid=<?php echo $r["id"]; ?>">Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ</a>
+						</small>
+
+					</div>
+					<?php } ?>
          		</td>
          	</tr>
          	<tr>
-         		<td><div id="subheading">Сообщил <?php echo $this->user->uidToName($r["by"]);?> | <?php echo date("M, d Y H:m:A",$r["started"]); ?></div>
-         		
+         		<td>
+					<div id="subheading">РЎРѕРѕР±С‰РёР» <?php echo $this->user->uidToName($r["by"]);?> | <?php if ($r["character"]!=0) echo "РџРµСЂСЃРѕРѕРЅР°Р¶ ".$this->user->charuidToName($r["character"])." | ";  echo date("M, d Y H:m:A",$r["started"]); ?></div>
          		</td>
          	</tr>
          	<tr>
-         	<td id="reportarea" ><?php echo stripslashes($this->make_clickable($r["report"], $this->clientexec, $this->git )); ?></td>
+				<td id="reportarea" >
+					<?php echo stripslashes($this->make_clickable($r["report"], $this->clientexec, $this->git )); ?>
+				</td>
          	</tr>
-         	<?php
-         	
+         	<?php         	
          	if(strlen($r["attachment"]) > 0){
          		$fn = strpos($r["attachment"], '-');
-         		
-         		
          		?>
-         			<tr>
-         			<td><div id="headings-small">Вложение</div></td>
-         			</tr>
-         			<tr><td><a href="<?php echo $r["attachment"]; ?>" target="_blank"><?php echo str_replace('uploads/', '',substr($r["attachment"], 0, $fn)); ?></a></td></tr>
-         		<?php
-         	}
-         	
-         	?>
+         	<tr>
+         		<td>
+					<div id="headings-small">Р’Р»РѕР¶РµРЅРёРµ</div>
+				</td>
+         	</tr>
+         	<tr>
+				<td>
+					<a href="<?php echo $r["attachment"]; ?>" target="_blank"><?php echo str_replace('uploads/', '',substr($r["attachment"], 0, $fn)); ?></a>
+				</td>
+			</tr>
+         		<?php } ?>
          </table>
 		<?php /*
            <table width="90%" class="bugreport" align="center" style='border: 1px solid #efefef;'>
@@ -469,48 +500,91 @@ class View extends Bugs {
     }
     
     function reply($bugid){
+		$reportedby = $this->user->getUID();
+		if (isset($_POST['subject'])){
+			$subject = $_POST['subject'];
+		}else{
+			$subject = "";
+		}
+		if (isset($_POST['report'])){
+			$report = $_POST['report'];
+		}else{
+			$report = "";
+		}
      ?>
-<form name="" method="POST" action="" enctype="multipart/form-data">
-<input type="hidden" name="MAX_FILE_SIZE" value="2000000">
-<table width="90%" cellspacing="2" align="center">
-<tr>
-<td colspan="2"><div id="headings">Добавить Комментарий</div>
-</td>
-</tr>
-
-<tr>
-	<td valign="top" width="50%">
-		<table width="100%" cellspacing="2" align="center">
+	<form name="" method="POST" action="" enctype="multipart/form-data">
+		<input type="hidden" name="MAX_FILE_SIZE" value="2000000">
+		<table width="90%" cellspacing="2" align="center">
 			<tr>
-				<td><label for="subject" >Название</label></td>
+				<td colspan="2">
+					<div id="headings">Р”РѕР±Р°РІРёС‚СЊ РљРѕРјРјРµРЅС‚Р°СЂРёР№</div>
+				</td>
 			</tr>
 			<tr>
-				<td><input type="text" class="input" name="subject" value="<?=$_POST['subject'];?>" /></td>
-			</tr>
-			<tr>
-				<td><label for="subject" >Комментарий</label></td>
-			</tr>
-			<tr>
-				<td><textarea name="report" class="textarea"><?=$_POST['report'];?></textarea></td>
-			</tr>
-			<tr>
-				<td><label for="attachment">Вложение</label></td>
-			</tr>
-			<tr>
-				<td><input type="file" name="attachment" /></td>
-			</tr>
-			<tr>
-				<td><div id="working"><img src="/loader.gif" id="loader" /> <b>В Процессе...</b></div> 
-
-            </div> <input type="submit" name="submitReport" value="Отправить" onclick="$('#working').fadeIn(); document.getElementById('working').style.visibility='visible';"></td>
+				<td valign="top" width="50%">
+					<table width="100%" cellspacing="2" align="center">
+						<tr>
+							<td>
+								<label for="subject" >РќР°Р·РІР°РЅРёРµ</label>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="text" class="input" name="subject" value="<?=$subject;?>" />
+							</td>
+						</tr>
+						<?php
+							if ($reportedby){
+						?>
+						<tr>
+							<td>
+								<label for="character">РџРµСЂСЃРѕРѕРЅР°Р¶</label>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<select name="character" class="select"><? echo $this->listCharacters($reportedby);?></select>
+							</td>
+						</tr>
+						<?php 
+							} else {
+						?>
+						<input type="hidden" name="character" value="0">
+						<?php } ?>
+						<tr>
+							<td>
+								<label for="subject" >РљРѕРјРјРµРЅС‚Р°СЂРёР№</label>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<textarea name="report" class="textarea"><?=$report;?></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="attachment">Р’Р»РѕР¶РµРЅРёРµ</label>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="file" name="attachment" />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div id="working">
+									<img src="/loader.gif" id="loader" /> 
+									<b>Р’ РџСЂРѕС†РµСЃСЃРµ...</b>
+								</div>
+								<input type="submit" name="submitReport" value="РћС‚РїСЂР°РІРёС‚СЊ" onclick="$('#working').fadeIn(); document.getElementById('working').style.visibility='visible';">
+							</td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 		</table>
-	</td>
-	</tr>
-	</table>
-</td></tr>
-</table>
-</form>
+	</form>
               
     <?php
     } 
@@ -560,10 +634,13 @@ class View extends Bugs {
   function listProjects($current = null){
    $q = $this->db->query("SELECT `id`, `name`, `mini` FROM `projects` ORDER BY `name` ASC");
    while($r = $this->db->fetch_array())
-    echo "<option value='$r[id]'>$r[name]</option>";
-    
+    echo "<option value='$r[id]'>$r[name]</option>";    
   }
-  
+  function listCharacters($acc_id, $current = null){
+   $q = $this->db->query("SELECT `guid`, `name` FROM `characters`.`characters` WHERE `account`='$acc_id' ORDER BY `name` ASC");
+   while($r = $this->db->fetch_array())
+    echo "<option value='$r[guid]'>$r[name]</option>";    
+  }  
   
  
 }  

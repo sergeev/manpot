@@ -8,7 +8,7 @@
        $this->user=new User();
     }
     
-    function todolists(){
+    function todolists(){	
         if(isset($_POST['create']))
             $this->createList($_POST['title'], $_POST['project']);
             
@@ -22,7 +22,7 @@
      <table width="90%" id="list" class="tablesorter" border="0" align="center" cellpadding="0" cellspacing="0">
       <thead>
       <tr>
-		<td><div id="headings">Список необходимых нововведений</div></td>
+		<td><div id="headings">РЎРїРёСЃРѕРє РЅРµРѕР±С…РѕРґРёРјС‹С… РЅРѕРІРѕРІРІРµРґРµРЅРёР№</div></td>
 	  </tr>
       </thead>
       <tbody>
@@ -30,14 +30,14 @@
            <td>
            <h3>
            <?php if(REGISTERED == 0 || $this->user->getUID() > 0){ ?>
-           <form name="" method="POST" action="">Создать список: 
+           <form name="" method="POST" action="">РЎРѕР·РґР°С‚СЊ СЃРїРёСЃРѕРє: 
            <input name="title" /> <select name="project">
              <?php 
              $tpr = $this->db->query("SELECT * FROM projects ORDER BY `name` ASC");
              while($r = mysql_fetch_array($tpr))
                 echo '<option value="'.$r['id'].'">'.$r['name'].'</option>';
            ?>
-    </select><input type="submit" name="create" value="Создать" />
+    </select><input type="submit" name="create" value="РЎРѕР·РґР°С‚СЊ" />
            </form></h3>
           
           <script>
@@ -58,7 +58,7 @@
             }
             
             function deletetd(id){
-            	var c = confirm("Удалить этот список?");
+            	var c = confirm("РЈРґР°Р»РёС‚СЊ СЌС‚РѕС‚ СЃРїРёСЃРѕРє?");
             	if(c)
             		document.getElementById('delete'+id).submit();
             }
@@ -82,7 +82,7 @@
                <div id="itemadd">
                <input name="title" id="title<?php echo $r['id']; ?>" class="quick" style="width: 300px;" />
                <input type="hidden" name="project" value="<?php echo $r['id']; ?>" />
-               <input type="submit" name="add"  style="width: 90px;" onclick="addTo(<?php echo $r['id']; ?>)" value="Добавить" />
+               <input type="submit" name="add"  style="width: 90px;" onclick="addTo(<?php echo $r['id']; ?>)" value="Р”РѕР±Р°РІРёС‚СЊ" />
                </div>
                <?php } ?>
                <div id="project<?php echo $r['id']; ?>" style='margin-left: 65px;'>
@@ -110,7 +110,7 @@
       
     function createList($title, $project){
     	if($title=="") $title = "{Untitled}"; 
-      $this->db->query_insert('todo_main', array('id' => '', 'title' => $title, 'project' => $project ) );
+      $this->db->query_insert('todo_main', array('id' => 'null', 'title' => $title, 'project' => $project ) );
     }  
   }
 ?>

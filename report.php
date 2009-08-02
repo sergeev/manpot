@@ -1,6 +1,6 @@
 <?php
-  defined('__bbug') or die();
+	defined('__bbug') or die();
   
-  $view = new View($this->db);
-  $view->reports();
+	$view = new View($this->db);
+	$view->reports();
 ?>
