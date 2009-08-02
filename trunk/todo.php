@@ -1,9 +1,6 @@
 <?php
-  defined('__bbug') or die();
-  
-?>
+	defined('__bbug') or die();
 
-<?php
-$list = new ToDo($this->db);
-$list->todolists(); 
+	$list = new ToDo($this->db);
+	$list->todolists(); 
 ?>

@@ -1,19 +1,8 @@
-/*
-SQLyog Community Edition- MySQL GUI v5.29
-Host - 5.0.45-community-nt : Database - test
-*********************************************************************
-Server version : 5.0.45-community-nt
-*/
-
-/*!40101 SET NAMES utf8 */;
-
-/*!40101 SET SQL_MODE=''*/;
-
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-
-/*Table structure for table `list` */
-
+SET FOREIGN_KEY_CHECKS=0;
+-- ----------------------------
+-- Table structure for `list`
+-- ----------------------------
+DROP TABLE IF EXISTS `list`;
 CREATE TABLE `list` (
   `id` int(11) NOT NULL auto_increment,
   `project` int(11) NOT NULL default '0',
@@ -28,42 +17,54 @@ CREATE TABLE `list` (
   `finished` int(11) NOT NULL default '0',
   `due` int(11) NOT NULL default '0',
   `assigned` int(11) NOT NULL default '0',
+  `character` int(11) NOT NULL,
   `attachment` varchar(100) NOT NULL,
+  PRIMARY KEY  (`id`),
   KEY `id` (`id`,`title`),
   KEY `priority` (`priority`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 
-/*Table structure for table `projects` */
+-- ----------------------------
+-- Table structure for `projects`
+-- ----------------------------
 
+DROP TABLE IF EXISTS `projects`;
 CREATE TABLE `projects` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `mini` varchar(255) NOT NULL default '',
   `description` longtext NOT NULL,
-  `client_exec` varchar(255) NOT NULL,
-  `github` varchar(255) NOT NULL,
+  `client_exec` varchar(255) NOT NULL default '0',
+  `github` varchar(255) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
   UNIQUE KEY `id` (`id`),
   KEY `subname` (`mini`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
-/*Table structure for table `todo_list` */
+-- ----------------------------
+-- Table structure for `todo_list`
+-- ----------------------------
 
+DROP TABLE IF EXISTS `todo_list`;
 CREATE TABLE `todo_list` (
   `id` int(11) NOT NULL auto_increment,
   `tid` int(11) NOT NULL,
   `content` text NOT NULL,
   `status` int(2) NOT NULL,
+  PRIMARY KEY  (`id`),
   KEY `id` (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 
-/*Table structure for table `todo_main` */
+-- ----------------------------
+-- Table structure for `todo_main`
+-- ----------------------------
 
+DROP TABLE IF EXISTS `todo_main`;
 CREATE TABLE `todo_main` (
   `id` int(11) NOT NULL auto_increment,
   `title` varchar(100) NOT NULL,
   `project` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
   KEY `id` (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

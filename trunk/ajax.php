@@ -1,4 +1,4 @@
-﻿<?php
+<?php
  define('__bbug', 1);
 include('includes/main.php');
 include('config.php');
@@ -49,7 +49,7 @@ if(isset($_POST["closeticket"]) && $isadmin == 1){
      
 if(isset($_POST["openticket"]) && $isadmin == 1){
  $closeticket = $mydb->clean($_POST["tickid"], '', '');
- $mydb->query_update('list', array('status' => 1, 'finished' => ''), "id='$closeticket'");
+ $mydb->query_update('list', array('status' => 1, 'finished' => '0'), "id='$closeticket'");
  echo "Ok";   
 }
 if(isset($_POST["changepri"]) && $isadmin == 1){

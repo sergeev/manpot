@@ -6,6 +6,8 @@
   if((REGISTERED == 1 && $this->user->getUID() != 0) || !REGISTERED){      // if registered is set in config, check, otherwise if its not set its still public / havnt added line
   $reportedby = $this->user->getUID();
   $bugView = new View($this->db); 
+  $subject = "";
+  $report = "";
   if(isset($_POST["submitReport"])){
   
   if($_POST["type"] == "bug")
@@ -19,24 +21,20 @@
   global $config;
   $subject = $_POST['subject'];
   $report = $_POST['report'];
-  if(empty($subject))
-  {
-  	$this->message("<center><h3>Не указано название!</h3></center>");
-  }
-  elseif(empty($report))
-  {
-  	$this->message("<center><h3>Не указано описание ошибки!</h3></center>");
-  }
-  elseif(strlen($subject) < $config['minlen_subject'])
-  {
-  	$this->message("<center><h3>Слишком мало символов в названии!</h3></center>");
-  }
-  elseif(strlen($report) < $config['minlen_report'])
-  {
-  	$this->message("<center><h3>Слишком мало символов в описании!</h3></center>");
-  }
-  else
-  {
+	if(empty($subject)){
+		$this->message("<center><h3>РќРµ СѓРєР°Р·Р°РЅРѕ РЅР°Р·РІР°РЅРёРµ!</h3></center>");
+	}
+	elseif(empty($report)){
+		$this->message("<center><h3>РќРµ СѓРєР°Р·Р°РЅРѕ РѕРїРёСЃР°РЅРёРµ РѕС€РёР±РєРё!</h3></center>");
+	}
+	elseif(strlen($subject) < $config['minlen_subject']){
+		$this->message("<center><h3>РЎР»РёС€РєРѕРј РјР°Р»Рѕ СЃРёРјРІРѕР»РѕРІ РІ РЅР°Р·РІР°РЅРёРё!</h3></center>");
+	}
+	elseif(strlen($report) < $config['minlen_report']){
+		$this->message("<center><h3>РЎР»РёС€РєРѕРј РјР°Р»Рѕ СЃРёРјРІРѕР»РѕРІ РІ РѕРїРёСЃР°РЅРёРё!</h3></center>");
+	}
+	else
+	{
   
   // do file uploads
   $target = "";
@@ -55,13 +53,13 @@
   		if(move_uploaded_file($_FILES['attachment']['tmp_name'], $target.$file_name)){
   			//echo ""
   		}else{
-  			echo "<center>Ваше сообщение было опубликовано, но вложение не было загружено. Обратитесь к Администратору.</center>";
+  			Main::message_error("Р’Р°С€Рµ СЃРѕРѕР±С‰РµРЅРёРµ Р±С‹Р»Рѕ РѕРїСѓР±Р»РёРєРѕРІР°РЅРѕ, РЅРѕ РІР»РѕР¶РµРЅРёРµ РЅРµ Р±С‹Р»Рѕ Р·Р°РіСЂСѓР¶РµРЅРѕ. РћР±СЂР°С‚РёС‚РµСЃСЊ Рє РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂСѓ.");
   			$file_name = "";
   			$target = "";
   			
   		}
   	}else{
-  		echo "Ваше сообщение было опубликовано, но вложение не было загружено. Недопустимое расширение.";
+  		Main::message_error("Р’Р°С€Рµ СЃРѕРѕР±С‰РµРЅРёРµ Р±С‹Р»Рѕ РѕРїСѓР±Р»РёРєРѕРІР°РЅРѕ, РЅРѕ РІР»РѕР¶РµРЅРёРµ РЅРµ Р±С‹Р»Рѕ Р·Р°РіСЂСѓР¶РµРЅРѕ. РќРµРґРѕРїСѓСЃС‚РёРјРѕРµ СЂР°СЃС€РёСЂРµРЅРёРµ.");
   		$file_name = "";
   			$target = "";
   	}
@@ -71,88 +69,138 @@
   
   $bugData = array('id' => 'null', 'project' => $_POST["project"], 'parent' => 0, 'title' => strip_tags($_POST["subject"]), 
         'report' => nl2br(strip_tags($_POST["report"])), 'status' => '1', 'by' => $reportedby, 'priority' => $_POST["priority"], 
-        'type' => $type, 'started' => time(), 'finished' => '', 'due' => '', 'assigned' => '', 'attachment' => $target.$file_name);
+        'type' => $type, 'started' => time(), 'finished' => '0', 'due' => '0', 'assigned' => '0', 'character' => $_POST["character"], 'attachment' => $target.$file_name);
                 $this->db->query_insert('list', $bugData);
-                $this->message("<center><h3>Сообщение Отправлено.</h3></center>");
+                $this->message("<center><h3>РЎРѕРѕР±С‰РµРЅРёРµ РћС‚РїСЂР°РІР»РµРЅРѕ.</h3></center>");
 
   
 
   
-  }
+	}
   }
 ?>
-
 <link type="text/css" href="js/jquery.wysiwyg.css" rel="stylesheet">
 <div id="submitForm" align="">
 <form name="" method="POST" action="" enctype="multipart/form-data">
-<input type="hidden" name="MAX_FILE_SIZE" value="2000000">
-<table width="90%" cellspacing="2" align="center">
-<tr>
-<td colspan="2"><div id="headings">Создать сообщение об ошибке</div>
-</td>
-</tr>
-
-<tr>
-	<td valign="top" width="50%">
-		<table width="100%" cellspacing="2" align="center">
-			<tr>
-				<td><label for="subject" >Название</label></td>
-			</tr>
-			<tr>
-				<td><input type="text" class="input" name="subject" value="<?=$subject;?>" /></td>
-			</tr>
-			<tr>
-				<td><label for="subject" >Описание проблемы/решения</label></td>
-			</tr>
-			<tr>
-				<td><textarea name="report" class="textarea"><?=$report;?></textarea></td>
-			</tr>
-		</table>
-	</td>
-	<td valign="top" width="50%">
-		<table width="100%" cellspacing="2" align="center">
-			<tr>
-				<td><label for="type">Тип сообщения</label></td>
-			</tr>
-			<tr>
-				<td><select class="select" name="type" ><option value="bug">Баг</option></select>
-</td>
-			</tr>
-			<tr>
-				<td><label for="priority">Приоритет</label></td>
-			</tr>
-			<tr>
-				<td><select class="select" name="priority"  ><option value="3">Низкий</option>
-					<option value="2">Средний</option>
-					<option value="1">Высокий</option></select>
-				</td>
-			</tr>
-			<tr>
-				<td><label for="project">Категория</label></td>
-			</tr>
-			<tr>
-				<td><select name="project" class="select"><? echo $bugView->listProjects();?></select></td>
-			</tr>
-			<tr>
-				<td><label for="attachment">Вложение</label></td>
-			</tr>
-			<tr>
-				<td><input type="file" name="attachment" /></td>
-			</tr>
-		</table>
-	</td>
-</tr>
-
-<tr>
-	<td colspan="2">
-	<div id="working"><img src="loader.gif" id="loader" /> <b>В Процессе...</b></div> 
-<div align="left">
-<input type="submit" name="submitReport" value="Опубликовать Сообщение" onclick="$('#working').fadeIn(); document.getElementById('working').style.visibility='visible';"></div>
-
-	</td>
-</tr>
-
-</table>
-
-</form><?php  ?>
-<?php }else { echo "Администратор установил требование регистрации для публикации сообщений."; } ?>
+	<input type="hidden" name="MAX_FILE_SIZE" value="2000000">
+	<table width="100%" cellspacing="0" cellpadding="0" align="center" bgcolor="#2E2D2B">
+		<tr>
+			<td colspan="2" class="rankingHeader" align="center">
+				<div id="headings">РЎРѕР·РґР°С‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ РѕР± РѕС€РёР±РєРµ</div>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top" width="50%">
+				<table width="100%" cellspacing="0" cellpadding="0" align="center">
+					<tr>
+						<td class="rankingHeader" align="center">
+							<label for="subject">РќР°Р·РІР°РЅРёРµ</label>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="text" class="input" name="subject" value="<?=$subject;?>" />
+						</td>
+					</tr>
+					<tr>
+						<td class="rankingHeader" align="center">
+							<label for="subject">РћРїРёСЃР°РЅРёРµ РїСЂРѕР±Р»РµРјС‹/СЂРµС€РµРЅРёСЏ</label>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<textarea name="report" class="textarea"><?=$report;?></textarea>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td valign="top" width="50%">
+				<table width="100%" cellspacing="0" cellpadding="0" align="center">
+					<tr>
+						<td class="rankingHeader" align="center">
+							<label for="type">РўРёРї СЃРѕРѕР±С‰РµРЅРёСЏ</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="center">
+							<select class="select" name="type">
+								<option value="bug">Р‘Р°Рі</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td class="rankingHeader" align="center">
+							<label for="priority">РџСЂРёРѕСЂРёС‚РµС‚</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="center">
+							<select class="select" name="priority">
+								<option value="3">РќРёР·РєРёР№</option>
+								<option value="2">РЎСЂРµРґРЅРёР№</option>
+								<option value="1">Р’С‹СЃРѕРєРёР№</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td class="rankingHeader" align="center">
+							<label for="project">РљР°С‚РµРіРѕСЂРёСЏ</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="center">
+							<select name="project" class="select">
+								<? echo $bugView->listProjects();?>
+							</select>
+						</td>
+					</tr>
+					<?php
+					if ($reportedby){
+					?>
+					<tr>
+						<td class="rankingHeader" align="center">
+							<label for="character">РџРµСЂСЃРѕРѕРЅР°Р¶</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="center">
+							<select name="character" class="select">
+								<? echo $bugView->listCharacters($reportedby);?>
+							</select>
+						</td>
+					</tr>
+					<?php 
+					} else {
+					?>
+					<input type="hidden" name="character" value="0">
+					<?php } ?>			
+					<tr>
+						<td class="rankingHeader" align="center">
+							<label for="attachment">Р’Р»РѕР¶РµРЅРёРµ</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="center">
+							<input type="file" name="attachment" />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<div id="working">
+					<img src="loader.gif" id="loader" /> <b>Р’ РџСЂРѕС†РµСЃСЃРµ...</b>
+				</div> <br>
+				<div align="center">
+					<input type="submit" name="submitReport" value="РћРїСѓР±Р»РёРєРѕРІР°С‚СЊ РЎРѕРѕР±С‰РµРЅРёРµ" onclick="$('#working').fadeIn(); document.getElementById('working').style.visibility='visible';">
+				</div>
+				<br>
+			</td>
+		</tr>
+	</table>
+</form>
+</div>
+<?php 	} else { 
+			Main::message_error("РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ СѓСЃС‚Р°РЅРѕРІРёР» С‚СЂРµР±РѕРІР°РЅРёРµ РІС…РѕРґР° РґР»СЏ РїСѓР±Р»РёРєР°С†РёРё СЃРѕРѕР±С‰РµРЅРёР№."); 
+		} ?>

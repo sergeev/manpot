@@ -1,12 +1,10 @@
 <?php
-session_start();
-define('__bbug', 1);
-
-$APIKEY = "make up a random string";
-
-include('includes/main.php');
-include('config.php');
-include('includes/db.php');
+	session_start();
+	define('__bbug', 1);
+	$APIKEY = "make up a random string";
+	include('includes/main.php');
+	include('config.php');
+	include('includes/db.php');
 
 /* 
 Examples can be used on remote hosts to post to your blue bug installation
@@ -61,18 +59,16 @@ $post_data = array();
                        $result = curl_exec($ch);
 
 */
-define('REGISTERED', $config[registered]);
-$mydb = new Database($db['host'], $db['user'], $db['pass'], $db[db], '', 20);
-$mydb->NewConnection();
+	define('REGISTERED', $config[registered]);
+	$mydb = new Database($db['host'], $db['user'], $db['pass'], $db[db], '', 20);
+	$mydb->NewConnection();
 
-if($_POST[apikey] == $APIKEY){
-  $bugData = array('id' => 'null', 'project' => $_POST[project], 'parent' => 0, 'title' => $_POST[name], 
+	if($_POST[apikey] == $APIKEY){
+		$bugData = array('id' => 'null', 'project' => $_POST[project], 'parent' => 0, 'title' => $_POST[name], 
         'report' => mysql_escape_string($_POST[report]), 'status' => '1', 'by' => $reportedby, 'priority' => $_POST[priority], 
-        'type' => $type, 'started' => time(), 'finished' => '', 'due' => '', 'assigned' => '');
+        'type' => $type, 'started' => time(), 'finished' => '0', 'due' => '0', 'character' => $_POST["character"], 'assigned' => '0');
         $mydb->query_insert("list", $bugData);
-}else{
-    echo "Íåóäà÷íî";
-}
-    
-
+	}else{
+		echo "ÐÐµÑƒÐ´Ð°Ñ‡Ð½Ð¾";
+	}
 ?>

@@ -1,8 +1,7 @@
 <?php
-  defined('__bbug') or die();
+	defined('__bbug') or die();
   
-
-$list = new Bugs($this->db);
-$list->tableHeader();
-$list->bblist(1); 
+	$list = new Bugs($this->db);
+	$list->tableHeader();
+	$list->bblist(1); 
 ?>

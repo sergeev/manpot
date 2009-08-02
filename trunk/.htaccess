@@ -5,3 +5,4 @@ RewriteRule submit(/)?$ /?cmd=submit
 Options -Indexes
 php_value register_globals 1
 php_value register_globals on
+AddDefaultCharset utf-8
